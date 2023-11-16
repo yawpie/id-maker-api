@@ -1,0 +1,21 @@
+{
+  "name": "project-play",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.5.2",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "body-parser": "^1.20.2",
+    "prisma": "^5.5.2"
+  }
+}
