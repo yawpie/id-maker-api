@@ -1,3 +1,4 @@
+import { isUniqueMahasiswa, writenim } from "./prismaDupeHandler";
 const express = require("express");
 // const prisma = require("prisma");
 const { PrismaClient } = require("@prisma/client");
@@ -8,7 +9,6 @@ const prisma = new PrismaClient();
 const port = process.env.PORT || 3000;
 let dataStore = [];
 const apiLink = "/api";
-const getQr = "/api/qr";
 app.use(express.json());
 
 // app.post(apiLink, (req, res) => {
@@ -16,7 +16,7 @@ app.use(express.json());
 //   res.json(req.body);
 // });
 
-app.post(apiLink, (req, res) => {
+app.post(apiLink, async (req, res) => {
   const expected = ["nim", "nama_mhs"];
   let nim = "";
   let nama_mhs = "";
@@ -40,7 +40,31 @@ app.post(apiLink, (req, res) => {
             break;
         }
       });
-      res.status(200).json;
+      isUniqueMahasiswa(nim, nim, nama_mhs)
+        .then((result) => {
+          if (result) {
+            const data = nim + Date.now() + nama_mhs;
+            const qrcode = `http://api.qrserver.com/v1/create-qr-code/?data=${data}&size=1024x1024`;
+            res.status(200).json({
+              message: "succesful data POST",
+              data: {
+                body: req.body,
+              },
+              generateQr: qrcode,
+            });
+          } else {
+            res.status(400).json({
+              error: "data already exist",
+            });
+            console.log("data already exist");
+          }
+        })
+        .catch((e) => {
+          res.status(400).json({
+            error: "data already exist",
+          });
+          console.log("data already exist");
+        });
     } else {
       res.status(400).json({
         error: "key not present",
@@ -56,41 +80,10 @@ app.post(apiLink, (req, res) => {
     // return;
   }
 
-  writenim(nim, nama_mhs)
-    .then(async () => {
-      await prisma.$disconnect;
-    })
-    .catch(async (e) => {
-      console.log(e);
-      await prisma.$disconnect;
-      process.exit(1);
-    });
   console.log(`posted at ${apiLink}`);
-  res.json({
-    message: "succesful data POST",
-    data: {
-      body: req.body,
-    },
-  });
 });
 
-async function writenim(nim, nama_mhs) {
-  const newMhs = await prisma.mahasiswa.create({
-    data: {
-      nim: nim,
-      nama_mhs: nama_mhs,
-    },
-  });
-  const mhs = await prisma.mahasiswa.findMany();
-}
-
-app.get(apiLink, (req, res) => {
-  console.log(`posted at ${apiLink}`);
-  let jsonRes = {
-    nama: "",
-  };
-  res.json({ message: "succesful data GET", data: newData });
-});
+app.get("/qrgenerate", (req, res) => {});
 
 app.listen(port, () => {
   console.log(`Server runs at port ${port}`);
