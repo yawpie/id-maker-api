@@ -8,22 +8,20 @@ datasource db {
 }
 
 model dosen {
-  nama_dosen String?  @db.VarChar(255)
-  nip        Int      @id @default(autoincrement())
-  matkul     matkul[]
+  nama_dosen String? @db.VarChar(255)
+  nip        BigInt  @unique(map: "nip")
+  id_dosen   Int     @id @default(autoincrement())
+  kd_matkul  Int?
 }
 
 model mahasiswa {
-  nim      String  @unique(map: "nim") @db.VarChar(12)
-  nama_mhs String? @db.VarChar(255)
   id_mhs   Int     @id @default(autoincrement())
+  nim      String? @unique(map: "nim") @db.VarChar(12)
+  nama_mhs String? @db.VarChar(255)
 }
 
 model matkul {
-  kd_matkul Int     @id @default(autoincrement())
   nama_mk   String? @db.VarChar(255)
-  nip       Int
-  dosen     dosen   @relation(fields: [nip], references: [nip], onUpdate: Restrict, map: "matkul_ibfk_1")
-
-  @@index([nip], map: "nip")
+  kd_matkul Int     @id @default(autoincrement())
+  id_dosen  Int?
 }
