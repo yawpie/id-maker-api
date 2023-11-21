@@ -1,5 +1,5 @@
 // import { isUniqueMahasiswa } from "../connection/prismaDupeHandler";
-const prismaDupeHandler = require("../connection/prismaDupeHandler");
+const prismaQuery = require("../connection/queryHandler");
 const express = require("express");
 const route = express.Router();
 
@@ -16,9 +16,7 @@ route.post(apiLink, (req, res) => {
   let nama_mhs = "";
 
   if (typeof req.body === "object" && req.body !== null) {
-    const present = expected.every((key) => req.body.hasOwnProperty(key));
-
-    if (present) {
+    if (expected.every((key) => req.body.hasOwnProperty(key))) {
       expected.forEach((key) => {
         switch (key) {
           case "nim":
@@ -34,31 +32,25 @@ route.post(apiLink, (req, res) => {
             break;
         }
       });
-      prismaDupeHandler(nim, nim, nama_mhs)
-        .then((result) => {
-          if (result) {
-            const data = nim + Date.now() + nama_mhs;
-            const qrcode = `http://api.qrserver.com/v1/create-qr-code/?data=${data}&size=1024x1024`;
-            res.status(200).send({
-              message: "succesful data POST",
-              data: {
-                body: req.body,
-              },
-              generateQr: qrcode,
-            });
-          } else {
-            res.status(400).send({
-              error: "data already exist",
-            });
-            console.log("data already exist");
-          }
-        })
-        .catch((e) => {
-          res.status(400).send({
-            error: "data already exist",
+
+      prismaQuery(nim, nama_mhs)
+        .then(() => {
+          const data =
+            nim + Date.now() + nama_mhs.replace(" ", "").toLowerCase();
+          const qrcode = `http://api.qrserver.com/v1/create-qr-code/?data=${data}&size=1024x1024`;
+          res.status(200).send({
+            message: "succesful data POST",
+            data: {
+              body: req.body,
+            },
+            generateQr: qrcode,
           });
-          console.log("data already exist, error code: " + e);
+        })
+        .catch((error) => {
+          res.status(400).send({ errorCode: error });
+          console.log("nim already exist, error code: " + error);
         });
+      console.log(`posted at ${apiLink}`);
     } else {
       res.status(400).send({
         error: "key not present",
@@ -73,8 +65,6 @@ route.post(apiLink, (req, res) => {
     console.log(`failed to post`);
     return;
   }
-
-  console.log(`posted at ${apiLink}`);
 });
 
 route.get(apiLink, (req, res) => {

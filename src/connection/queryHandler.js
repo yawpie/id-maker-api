@@ -1,27 +1,13 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-async function isUniqueMahasiswa(isNimSame, nim, nama_mhs) {
-  const dupe = await prisma.mahasiswa.groupBy({
-    by: ["nim"],
-    having: {
-      _count: {
-        gt: 1,
-      },
-    },
-  });
-  let isUnique = true;
-  if (dupe.length > 0) {
-    isUnique = false;
-  }
-  let isEmpty = false;
-
-  const count = await prisma.mahasiswa.count();
-  if (count === 0) {
-    isEmpty = true;
-  }
-
-  if (isUnique) {
+async function isUniqueMahasiswa(nim, nama_mhs) {
+  // const unique = await prisma.mahasiswa.findUnique({
+  //   where: {
+  //     nim: isNimSame,
+  //   },
+  // });
+  try {
     writenim(nim, nama_mhs)
       .then(async () => {
         await prisma.$disconnect;
@@ -31,9 +17,8 @@ async function isUniqueMahasiswa(isNimSame, nim, nama_mhs) {
         await prisma.$disconnect;
         process.exit(1);
       });
-    return true;
-  } else {
-    return false;
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -47,4 +32,4 @@ async function writenim(nim, nama_mhs) {
   const mhs = await prisma.mahasiswa.findMany();
 }
 
-module.exports = isUniqueMahasiswa;
+module.exports = writenim;
