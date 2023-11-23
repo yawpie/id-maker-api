@@ -1,14 +1,9 @@
-// import { isUniqueMahasiswa } from "../connection/prismaDupeHandler";
 const prismaQuery = require("../connection/queryHandler");
 const express = require("express");
 const route = express.Router();
 
 const apiLink = "/api";
 
-// route.use((req, res, next) => {
-//   console.log(new Date());
-//   next();
-// });
 route.use(express.json());
 route.post(apiLink, (req, res) => {
   const expected = ["nim", "nama_mhs"];
