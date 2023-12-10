@@ -8,8 +8,5 @@ app.use(route);
 
 app.listen(port, () => {
   console.log(`Server runs at port ${port}`);
+  console.log(`https://localhost::${port}`);
 });
-
-// app.post(port, (req, res) => {
-//   console.log("berhasil post");
-// });

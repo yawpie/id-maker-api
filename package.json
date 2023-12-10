@@ -1,14 +1,14 @@
 {
-  "name": "project-play",
+  "name": "id-maker-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "sebuah api untuk terhubung ke database mysql saya",
   "main": "src/app/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon src/server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "yawpie",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.5.2",

@@ -31,7 +31,7 @@ route.post(apiLink, (req, res) => {
       prismaQuery(nim, nama_mhs)
         .then(() => {
           const data =
-            nim + Date.now() + nama_mhs.replace(" ", "").toLowerCase();
+            nim + Date.now() + nama_mhs.replace(/\s/g, "").toLowerCase();
           const qrcode = `http://api.qrserver.com/v1/create-qr-code/?data=${data}&size=1024x1024`;
           res.status(200).send({
             message: "succesful data POST",
